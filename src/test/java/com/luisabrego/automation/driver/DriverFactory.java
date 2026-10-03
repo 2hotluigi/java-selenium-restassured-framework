@@ -116,7 +116,7 @@ public final class DriverFactory {
                 "--disable-notifications",
                 "--window-size=1920,1080");
         if (headless) {
-            options.addArguments("--headless=new");
+            options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
         }
         return options;
     }
