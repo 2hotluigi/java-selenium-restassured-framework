@@ -47,6 +47,20 @@ jobs:
             ./mvnw -B test -Dheadless=true
           fi
 
+      # Copy the history of the report published on GitHub Pages into the new results,
+      # so the Trend charts show previous runs. The first run simply has no history.
+      - name: Restore Allure history
+        if: always()
+        env:
+          REPORT_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          mkdir -p target/allure-results/history
+          for file in history.json history-trend.json duration-trend.json categories-trend.json retry-trend.json; do
+            if curl -fsSL "$REPORT_URL/history/$file" -o "/tmp/$file"; then
+              mv "/tmp/$file" "target/allure-results/history/$file"
+            fi
+          done
+
       - name: Generate Allure report
         if: always()
         run: ./mvnw -B allure:report

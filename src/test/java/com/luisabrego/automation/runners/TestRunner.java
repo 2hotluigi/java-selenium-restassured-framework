@@ -1,7 +1,9 @@
 package com.luisabrego.automation.runners;
 
+import com.luisabrego.automation.utils.AllureEnvironment;
 import io.cucumber.testng.AbstractTestNGCucumberTests;
 import io.cucumber.testng.CucumberOptions;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 
 /**
@@ -23,6 +25,11 @@ import org.testng.annotations.DataProvider;
         },
         monochrome = true)
 public class TestRunner extends AbstractTestNGCucumberTests {
+
+    @BeforeSuite
+    public void writeAllureEnvironment() {
+        AllureEnvironment.write();
+    }
 
     @Override
     @DataProvider(parallel = true)
