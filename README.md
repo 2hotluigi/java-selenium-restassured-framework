@@ -9,6 +9,8 @@ Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running 
 
 📊 **[Latest Allure report](https://2hotluigi.github.io/java-selenium-restassured-framework/)**
 
+[![Allure report overview](docs/images/allure-report.png)](https://2hotluigi.github.io/java-selenium-restassured-framework/)
+
 ## What it shows
 
 | Area | Implementation |
