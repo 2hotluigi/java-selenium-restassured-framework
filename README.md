@@ -21,9 +21,9 @@ Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running 
 | Hybrid tests | UI scenarios create their test users through the API: faster and independent |
 | Parallel execution | Scenarios run in parallel with TestNG; state is scenario-scoped via PicoContainer DI |
 | Test data | Unique users generated with Datafaker, cleaned up automatically after each scenario |
-| Cross-browser | Chrome, Edge and Firefox, local or on Selenium Grid (Docker) |
-| Reporting | Allure with steps, API request/response attachments and screenshots on failure |
-| CI/CD | GitHub Actions on every push and PR, weekly schedule, manual runs by tag, report published to GitHub Pages |
+| Cross-browser | Chrome, Firefox and Edge, local or on Selenium Grid (Docker); CI runs the UI suite on all three in parallel |
+| Reporting | One Allure report for every browser, grouped as API / UI · Chrome / UI · Firefox / UI · Edge, with steps, API request/response attachments, screenshots on failure, environment and history trend |
+| CI/CD | GitHub Actions matrix (API once, UI per browser) on every push and PR, weekly schedule, manual runs by tag, merged report published to GitHub Pages |
 
 ## Tech stack
 
@@ -74,8 +74,8 @@ On Windows, use `.\mvnw` (PowerShell) or `mvnw` (cmd) instead of `./mvnw`.
 ### Selenium Grid with Docker
 
 ```bash
-docker compose up -d
-./mvnw test -Dgrid.url=http://localhost:4444
+docker compose up -d   # hub + Chrome, Firefox and Edge nodes
+./mvnw test -Dgrid.url=http://localhost:4444 -Dbrowser=firefox
 ```
 
 ### Allure report
@@ -89,8 +89,12 @@ docker compose up -d
 - **The API under test always returns HTTP 200.** The real status is in the `responseCode` field of the
   body, and the content type is `text/html`. The framework checks both and parses the body as JSON
   explicitly (`ApiResponses`).
-- **Ads on the demo site** cover elements and open random pop-up pages. Chromium browsers resolve the
-  ad domains to localhost, which removes that source of flakiness without touching the page.
+- **Ads on the demo site** cover elements and open random pop-up pages. The same list of ad hosts is
+  blocked in every browser: Chrome and Edge resolve them to localhost (`--host-resolver-rules`), and
+  Firefox sends them to a closed port through an inline proxy auto-config (PAC) script.
+- **Cross-browser results in one report.** Allure identifies a scenario by its file and line, so the
+  same scenario run on two browsers would be merged as retries. A `@Before` hook adds the browser as a
+  parameter and to the history id of UI scenarios, and groups the Suites tab by layer and browser.
 - **API-first setup.** UI scenarios that need an existing account create it through the API and
   delete it in an `@After` hook, so every scenario is independent and can run in parallel.
 
