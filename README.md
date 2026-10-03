@@ -4,7 +4,7 @@
 [![Allure Report](https://img.shields.io/badge/report-Allure-orange)](https://2hotluigi.github.io/java-selenium-restassured-framework/)
 
 UI and API test automation framework for the public demo store
-[automationexercise.com](https://automationexercise.com), built with **Java 25, Selenium WebDriver,
+[automationexercise.com](https://automationexercise.com), built with **Java 21, Selenium WebDriver,
 Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running on **GitHub Actions**.
 
 📊 **[Latest Allure report](https://2hotluigi.github.io/java-selenium-restassured-framework/)**
@@ -25,7 +25,7 @@ Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running 
 
 ## Tech stack
 
-Java 25 · Maven · Selenium 4 · Cucumber 7 · TestNG · REST Assured 5 · AssertJ · Jackson · Datafaker · Allure · GitHub Actions · Docker
+Java 21 · Maven · Selenium 4 · Cucumber 7 · TestNG · REST Assured 5 · AssertJ · Jackson · Datafaker · Allure · GitHub Actions · Docker
 
 ## Project structure
 
@@ -48,35 +48,38 @@ src/test/resources
 
 ## Running the tests
 
-Requirements: JDK 25+, Maven 3.9+ and Chrome (drivers are downloaded automatically by Selenium Manager).
+Requirements: JDK 21+ and Chrome. Maven is not needed: the Maven Wrapper (`mvnw`) downloads the right
+version on the first run, and Selenium Manager downloads the browser drivers.
+
+On Windows, use `.\mvnw` (PowerShell) or `mvnw` (cmd) instead of `./mvnw`.
 
 ```bash
 # All scenarios
-mvn test
+./mvnw test
 
 # Only API or only UI
-mvn test -Dcucumber.filter.tags="@api"
-mvn test -Dcucumber.filter.tags="@ui"
+./mvnw test -Dcucumber.filter.tags="@api"
+./mvnw test -Dcucumber.filter.tags="@ui"
 
 # Smoke suite, headless, 4 parallel threads
-mvn test -Dcucumber.filter.tags="@smoke" -Dheadless=true -Dthreads=4
+./mvnw test -Dcucumber.filter.tags="@smoke" -Dheadless=true -Dthreads=4
 
 # Another browser
-mvn test -Dbrowser=firefox
-mvn test -Dbrowser=edge
+./mvnw test -Dbrowser=firefox
+./mvnw test -Dbrowser=edge
 ```
 
 ### Selenium Grid with Docker
 
 ```bash
 docker compose up -d
-mvn test -Dgrid.url=http://localhost:4444
+./mvnw test -Dgrid.url=http://localhost:4444
 ```
 
 ### Allure report
 
 ```bash
-mvn allure:serve
+./mvnw allure:serve
 ```
 
 ## Design notes
