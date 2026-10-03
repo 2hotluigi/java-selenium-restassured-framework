@@ -19,6 +19,8 @@ import org.testng.annotations.DataProvider;
         },
         plugin = {
                 "pretty",
+                // Must come before the Allure plugin, see StepScreenshotPlugin.
+                "com.luisabrego.automation.reporting.StepScreenshotPlugin",
                 "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm",
                 "html:target/cucumber-report.html",
                 "rerun:target/failed-scenarios.txt"

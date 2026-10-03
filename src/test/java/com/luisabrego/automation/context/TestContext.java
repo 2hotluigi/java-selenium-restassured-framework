@@ -1,5 +1,6 @@
 package com.luisabrego.automation.context;
 
+import com.luisabrego.automation.driver.CurrentDriver;
 import com.luisabrego.automation.driver.DriverFactory;
 import com.luisabrego.automation.utils.UserData;
 import io.restassured.response.Response;
@@ -22,6 +23,7 @@ public class TestContext {
     public WebDriver getDriver() {
         if (driver == null) {
             driver = DriverFactory.createDriver();
+            CurrentDriver.set(driver);
         }
         return driver;
     }
@@ -36,6 +38,7 @@ public class TestContext {
                 driver.quit();
             } finally {
                 driver = null;
+                CurrentDriver.clear();
             }
         }
     }
