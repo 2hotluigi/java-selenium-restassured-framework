@@ -4,7 +4,7 @@
 [![Allure Report](https://img.shields.io/badge/report-Allure-orange)](https://2hotluigi.github.io/java-selenium-restassured-framework/)
 
 UI and API test automation framework for the public demo store
-[automationexercise.com](https://automationexercise.com), built with **Java 17, Selenium WebDriver,
+[automationexercise.com](https://automationexercise.com), built with **Java 25, Selenium WebDriver,
 Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running on **GitHub Actions**.
 
 📊 **[Latest Allure report](https://2hotluigi.github.io/java-selenium-restassured-framework/)**
@@ -25,7 +25,7 @@ Cucumber (BDD), TestNG and REST Assured**, reported with **Allure** and running 
 
 ## Tech stack
 
-Java 17 · Maven · Selenium 4 · Cucumber 7 · TestNG · REST Assured 5 · AssertJ · Jackson · Datafaker · Allure · GitHub Actions · Docker
+Java 25 · Maven · Selenium 4 · Cucumber 7 · TestNG · REST Assured 5 · AssertJ · Jackson · Datafaker · Allure · GitHub Actions · Docker
 
 ## Project structure
 
@@ -48,7 +48,7 @@ src/test/resources
 
 ## Running the tests
 
-Requirements: JDK 17+, Maven 3.9+ and Chrome (drivers are downloaded automatically by Selenium Manager).
+Requirements: JDK 25+, Maven 3.9+ and Chrome (drivers are downloaded automatically by Selenium Manager).
 
 ```bash
 # All scenarios
