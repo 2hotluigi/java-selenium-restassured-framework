@@ -3,8 +3,12 @@ package com.luisabrego.automation.driver;
 import com.luisabrego.automation.config.ConfigReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Base64;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.PageLoadStrategy;
@@ -25,15 +29,32 @@ public final class DriverFactory {
 
     /**
      * The demo site is full of ads that cover elements and add random "vignette" pages.
-     * Chromium browsers resolve ad hosts to localhost so tests stay fast and deterministic.
+     * Requests to these hosts are blocked so tests stay fast and deterministic.
      */
-    private static final String BLOCKED_AD_HOSTS = String.join(", ",
-            "MAP *.doubleclick.net 127.0.0.1",
-            "MAP *.googlesyndication.com 127.0.0.1",
-            "MAP *.googleadservices.com 127.0.0.1",
-            "MAP *.googletagservices.com 127.0.0.1",
-            "MAP *.adtrafficquality.google 127.0.0.1",
-            "MAP fundingchoicesmessages.google.com 127.0.0.1");
+    private static final List<String> AD_HOSTS = List.of(
+            "*.doubleclick.net",
+            "*.googlesyndication.com",
+            "*.googleadservices.com",
+            "*.googletagservices.com",
+            "*.adtrafficquality.google",
+            "fundingchoicesmessages.google.com");
+
+    /** Chromium browsers resolve the ad hosts to localhost. */
+    private static final String CHROMIUM_HOST_RULES = AD_HOSTS.stream()
+            .map(host -> "MAP " + host + " 127.0.0.1")
+            .collect(Collectors.joining(", "));
+
+    /**
+     * Firefox has no host resolver rules, so a proxy auto-config script sends the ad hosts
+     * to a closed local port and lets every other request go direct.
+     */
+    private static final String FIREFOX_AD_BLOCKING_PAC = "data:application/x-ns-proxy-autoconfig;base64,"
+            + Base64.getEncoder().encodeToString((
+            "function FindProxyForURL(url, host) {"
+                    + AD_HOSTS.stream()
+                    .map(host -> " if (shExpMatch(host, '" + host + "')) return 'PROXY 127.0.0.1:9';")
+                    .collect(Collectors.joining())
+                    + " return 'DIRECT'; }").getBytes(StandardCharsets.UTF_8));
 
     private DriverFactory() {
     }
@@ -77,7 +98,7 @@ public final class DriverFactory {
         ChromeOptions options = new ChromeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         options.addArguments(
-                "--host-resolver-rules=" + BLOCKED_AD_HOSTS,
+                "--host-resolver-rules=" + CHROMIUM_HOST_RULES,
                 "--disable-notifications",
                 "--disable-search-engine-choice-screen",
                 "--window-size=1920,1080");
@@ -91,11 +112,11 @@ public final class DriverFactory {
         EdgeOptions options = new EdgeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
         options.addArguments(
-                "--host-resolver-rules=" + BLOCKED_AD_HOSTS,
+                "--host-resolver-rules=" + CHROMIUM_HOST_RULES,
                 "--disable-notifications",
                 "--window-size=1920,1080");
         if (headless) {
-            options.addArguments("--headless=new");
+            options.addArguments("--headless=new", "--no-sandbox", "--disable-dev-shm-usage");
         }
         return options;
     }
@@ -103,6 +124,10 @@ public final class DriverFactory {
     private static FirefoxOptions firefoxOptions(boolean headless) {
         FirefoxOptions options = new FirefoxOptions();
         options.setPageLoadStrategy(PageLoadStrategy.EAGER);
+        options.addPreference("network.proxy.type", 2);
+        options.addPreference("network.proxy.autoconfig_url", FIREFOX_AD_BLOCKING_PAC);
+        options.addPreference("dom.webnotifications.enabled", false);
+        options.addArguments("-width=1920", "-height=1080");
         if (headless) {
             options.addArguments("-headless");
         }
